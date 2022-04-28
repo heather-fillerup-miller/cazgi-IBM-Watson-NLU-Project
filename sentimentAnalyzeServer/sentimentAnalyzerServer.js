@@ -12,6 +12,7 @@ app.use(cors_app());
 /*Uncomment the following lines to loan the environment 
 variables that you set up in the .env file*/
 const dotenv = require('dotenv');
+const { text } = require('express');
 dotenv.config();
 const api_key = process.env.API_KEY;
 const api_url = process.env.API_URL;
@@ -52,7 +53,7 @@ app.get("/url/emotion", (req,res) => {
     const naturalLanguageUnderstanding = getNLUInstance();
 
     naturalLanguageUnderstanding.analyze(analyzeParams)
-    .then(analysisResult => {
+    .then(analysisResults => {
         //Retrieve the emotion and return it as a formatted string
         return res.send(analysisResults.result.keywords[0].emotion,null,2);
     })
@@ -88,11 +89,48 @@ app.get("/url/sentiment", (req,res) => {
 
 //The endpoint for the webserver ending with /text/emotion
 app.get("/text/emotion", (req,res) => {
-    return res.send({"happy":"10","sad":"90"});
+    let textToAnalyze = req.query.text;
+    const analyzeParams = {
+        "text": textToAnalyze,
+        "features": {
+            "keywords": {
+                "emotion": true,
+                "limit": 1
+            }
+        }
+    }
+
+    const naturalLanguageUnderstanding = getNLUInstance();
+    naturalLanguageUnderstanding.analyze(analyzeParams)
+    .then(analysisResults => {
+        //Retrieve the emotion and return it as a formatted string
+        return res.send(analysisResults.result.keywords[0].emotion, null, 2);
+    })
+    .catch(err => {
+        return res.send("Operation failed!"+err);
+    })
 });
 
 app.get("/text/sentiment", (req,res) => {
-    return res.send("text sentiment for "+req.query.text);
+    let textToAnaylyze = req.query.text;
+    const analyzeParams = {
+        "text": textToAnaylyze,
+        "features": {
+            "keywords": {
+                "sentiment": true,
+                "limit": 1
+            }
+        }
+    }
+
+    const naturalLanguageUnderstanding = getNLUInstance();
+    naturalLanguageUnderstanding.analyze(analyzeParams)
+    .then(analysisResults => {
+        return res.send(analysisResults.result.keywords[0].sentiment, null, 2);
+    })
+    .catch (err => {
+        return res.send("Operation failed!" + err);
+    });
 });
 
 let server = app.listen(8080, () => {
