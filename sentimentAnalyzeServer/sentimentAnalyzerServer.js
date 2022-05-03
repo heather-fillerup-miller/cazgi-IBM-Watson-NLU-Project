@@ -70,7 +70,7 @@ app.get("/url/sentiment", (req,res) => {
        "url": urlToAnalyze,
        "features": {
            "keywords": {
-               "emotion": true,
+               "sentiment": true,
                "limit": 1
            }
        }
@@ -79,6 +79,7 @@ app.get("/url/sentiment", (req,res) => {
 
    naturalLanguageUnderstanding.analyze(analyzeParams)
    .then(analysisResults => {
+       console.log(analysisResults);
        //Retrieve the sentiment and return it as a formatted string
        return res.send(analysisResults.result.keywords[0].sentiment,null,2);
    })
@@ -104,6 +105,7 @@ app.get("/text/emotion", (req,res) => {
     naturalLanguageUnderstanding.analyze(analyzeParams)
     .then(analysisResults => {
         //Retrieve the emotion and return it as a formatted string
+        console.log(analysisResults);
         return res.send(analysisResults.result.keywords[0].emotion, null, 2);
     })
     .catch(err => {

@@ -44,7 +44,9 @@ class App extends React.Component {
     url = url+"/" + mode + "/sentiment?"+ mode + "="+document.getElementById("textinput").value;
 
     fetch(url).then((response)=>{
+        console.log(response);
         response.json().then((data)=>{
+        console.log(data);
         this.setState({sentimentOutput:data.label});
         let output = data.label;
         let color = "white"
@@ -58,17 +60,22 @@ class App extends React.Component {
       })});
   }
 
-  sendForEmotionAnalysis = () => {
+  sendForEmotionAnalysis = async () => {
 
     this.setState({sentiment:false});
     let url = ".";
     let mode = this.state.mode
     url = url+"/" + mode + "/emotion?"+ mode + "="+document.getElementById("textinput").value;
 
-    fetch(url).then((response)=>{
-      response.json().then((data)=>{
-      this.setState({sentimentOutput:<EmotionTable emotions={data}/>});
-  })})  ;
+    this.setState({sentimentOutput:<EmotionTable emotions={await (await fetch(url)).json()}></EmotionTable>});
+    
+
+      // fetch(url).then((response)=>{
+      //   //const result = await response;
+      //   response.json().then((data) => {
+      //     console.log(data);
+      //     this.setState({sentimentOutput:<EmotionTable emotions={data}/>});})
+      //   })
   }
   
 
